@@ -1,31 +1,28 @@
-from django.shortcuts import render, redirect
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 from .models import Product
 
-def product_list(request):
-    products = Product.objects.all()
-    return render(request, 'product_list.html', {'products': products})
+class ProductListView(ListView):
+    model = Product
+    template_name = 'product_list.html'
 
-def product_detail(request, product_id):
-    product = Product.objects.get(id=product_id)
-    return render(request, 'product_detail.html', {'product': product})
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'product_detail.html'
 
-def add_product(request):
-    if request.method == 'POST':
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('product_list')
-    else:
-        form = ProductForm()
-    return render(request, 'add_product.html', {'form': form})
+class ProductCreateView(CreateView):
+    model = Product
+    fields = ['name', 'description', 'price']
+    template_name = 'product_form.html'
+    success_url = reverse_lazy('product_list')
 
-def edit_product(request, product_id):
-    product = Product.objects.get(id=product_id)
-    if request.method == 'POST':
-        form = ProductForm(request.POST, instance=product)
-        if form.is_valid():
-            form.save()
-            return redirect('product_detail', product_id=product.id)
-    else:
-        form = ProductForm(instance=product)
-    return render(request, 'edit_product.html', {'form': form})
+class ProductUpdateView(UpdateView):
+    model = Product
+    fields = ['name', 'description', 'price']
+    template_name = 'product_form.html'
+    success_url = reverse_lazy('product_list')
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    template_name = 'product_confirm_delete.html'
+    success_url = reverse_lazy('product_list')
