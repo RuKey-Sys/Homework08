@@ -46,9 +46,12 @@ jobs:
           DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
         run: |
           python manage.py migrate
-          python manage.py collectstatic --noinput
+          python myshop/manage.py collectstatic --noinput
 
       - name: Run Tests
+        working-directory: ./myshop
         env:
           DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
-        run: pytest --ds=myshop.settings --maxfail=1 --disable-warnings
+        run: |
+          export DJANGO_SETTINGS_MODULE=myshop.settings
+          pytest --ds=myshop.settings --maxfail=1 --disable-warnings
