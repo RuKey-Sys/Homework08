@@ -48,10 +48,14 @@ jobs:
           python manage.py migrate
           python myshop/manage.py collectstatic --noinput
 
+      - name: Set Python path
+        run: |
+          export PYTHONPATH=$(pwd)/myshop
+
       - name: Run Tests
         working-directory: ./myshop
         env:
           DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
         run: |
-          export DJANGO_SETTINGS_MODULE=myshop.myshop.settings
-          pytest --ds=myshop.myshop.settings --maxfail=1 --disable-warnings
+          export DJANGO_SETTINGS_MODULE=myshop.settings
+          pytest --ds=myshop.settings --maxfail=1 --disable-warnings
