@@ -58,6 +58,11 @@ jobs:
         run: |
           pytest --maxfail=1 --disable-warnings
 
+      - name: Run tests and generate coverage report
+        run: |
+          coverage run --source=mypkg -m pytest myshop/tests/
+          coverage xml
+
       - name: Coveralls
         uses: coverallsapp/github-action@v2
 
