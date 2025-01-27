@@ -60,7 +60,7 @@ jobs:
 
       - name: Run tests and generate coverage report
         run: |
-          coverage run --source=mypkg -m pytest myshop/tests/
+          coverage run --source=myshop -m pytest myshop/tests/
           coverage xml
 
       - name: Coveralls
