@@ -1,0 +1,46 @@
+image: python:3.12  # Используем образ Python
+
+stages:
+  - test
+  - coverage
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  COVERALLS_REPO_TOKEN: $COVERALLS_REPO_TOKEN  # Токен для Coveralls
+
+cache:
+  paths:
+    - .cache/pip
+
+before_script:
+  - python -m venv venv
+  - source venv/bin/activate
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+  - pip install pytest-cov
+
+test:
+  stage: test
+  script:
+    - source venv/bin/activate
+    - coverage erase
+    - coverage run --source=myshop -m pytest myshop/tests/
+    - coverage xml
+  artifacts:
+    paths:
+      - coverage.xml
+    expire_in: 1 day
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'  
+    - if: '$CI_MERGE_REQUEST_ID'  
+      when: manual
+
+coverage:
+  stage: coverage
+  script:
+    - source venv/bin/activate
+    - coveralls --service=gitlab
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'  
+    - if: '$CI_MERGE_REQUEST_ID' 
+      when: manual
